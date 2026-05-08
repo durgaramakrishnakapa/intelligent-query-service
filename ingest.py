@@ -58,13 +58,28 @@ def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
 def normalize_multi_value_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize spacing in comma-separated columns."""
 
+    multi_value_columns = ["country", "cast", "listed_in"]
+
+    for column in multi_value_columns:
+        df[column] = df[column].str.replace(r"\s*,\s*", ", ", regex=True)
+
+    return df
 
 def validate_release_year(df: pd.DataFrame) -> pd.DataFrame:
     """Ensure release_year is stored as an integer."""
 
+    df["release_year"] = df["release_year"].astype(int)
+
+    return df
+
 
 def remove_duplicate_rows(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     """Remove exact duplicate rows from the dataset."""
+
+    duplicate_count = df.duplicated().sum()
+    df = df.drop_duplicates()
+
+    return df, duplicate_count
 
 
 def create_database_connection(db_path: str) -> sqlite3.Connection:
@@ -120,11 +135,27 @@ def main() -> None:
     print("\nMissing values handled successfully.")
     print(df.isnull().sum())
     print(missing_report)
-
     df = standardize_columns(df)
 
     print("\nColumn standardization completed.")
     print(df[["type", "rating"]].head())
+
+    df = normalize_multi_value_columns(df)
+
+    print("\nMulti-value column normalization completed.")
+    print(df[["country", "cast", "listed_in"]].head())
+
+    df = validate_release_year(df)
+
+    print("\nRelease year validation completed.")
+    print(df["release_year"].dtype)
+
+    df, duplicate_count = remove_duplicate_rows(df)
+
+    print("\nDuplicate removal completed.")
+    print(f"Duplicates removed: {duplicate_count}")
+
+
 
 if __name__ == "__main__":
     main()
