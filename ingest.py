@@ -1,12 +1,19 @@
-"""
-Load, clean, and store Netflix dataset into SQLite.
-"""
+""" Load, clean, and store Netflix dataset into SQLite. """
+import sqlite3
+import pandas as pd
 
+"""Load Netflix CSV data into a pandas DataFrame."""
 def load_csv_data(csv_path: str) -> pd.DataFrame:
-    """Load Netflix CSV data into a pandas DataFrame."""
+    df = pd.read_csv(csv_path)
+    return df
 
+
+
+"""Remove extra spaces from text columns."""
 def clean_text_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
-    """Remove extra spaces from text columns."""
+    for column in columns:
+        df[column] = df[column].astype(str).str.strip()
+    return df
 
 
 def handle_missing_values(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
