@@ -85,14 +85,41 @@ def remove_duplicate_rows(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
 def create_database_connection(db_path: str) -> sqlite3.Connection:
     """Create and return a SQLite database connection."""
 
+    connection = sqlite3.connect(db_path)
+    return connection
+
 
 def create_titles_table(connection: sqlite3.Connection) -> None:
     """Create the titles table in the SQLite database."""
+
+    cursor = connection.cursor()
+
+    cursor.execute("DROP TABLE IF EXISTS titles")
+
+    cursor.execute("""
+        CREATE TABLE titles (
+            show_id TEXT PRIMARY KEY,
+            type TEXT,
+            title TEXT,
+            director TEXT,
+            cast TEXT,
+            country TEXT,
+            date_added TEXT,
+            release_year INTEGER,
+            rating TEXT,
+            duration TEXT,
+            listed_in TEXT,
+            description TEXT
+        )
+    """)
+
+    connection.commit()
 
 
 def insert_cleaned_data(connection: sqlite3.Connection, df: pd.DataFrame) -> None:
     """Insert cleaned records into the database."""
 
+    df.to_sql("titles", connection, if_exists="append", index=False)
 
 def print_summary_report(
     total_rows: int,
@@ -154,6 +181,20 @@ def main() -> None:
 
     print("\nDuplicate removal completed.")
     print(f"Duplicates removed: {duplicate_count}")
+
+    db_path = "data/netflix.db"
+
+    connection = create_database_connection(db_path)
+
+    print("\nDatabase connection created successfully.")
+
+    create_titles_table(connection)
+
+    print("Titles table created successfully.")
+
+    insert_cleaned_data(connection, df)
+
+    print("Cleaned data inserted successfully.")
 
 
 
