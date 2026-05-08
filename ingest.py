@@ -12,8 +12,10 @@ def load_csv_data(csv_path: str) -> pd.DataFrame:
 
 def clean_text_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     """Remove extra spaces from text columns."""
+    
     for column in columns:
-        df[column] = df[column].astype(str).str.strip()
+        df[column] = df[column].str.strip()
+    
     return df
 
 
@@ -84,6 +86,9 @@ def main() -> None:
     print("\nText cleaning completed.")
     print(df.head())
 
+    print("\nMissing values report:")
+    print(df.isnull().sum())
 
 if __name__ == "__main__":
     main()
+
