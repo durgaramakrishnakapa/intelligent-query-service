@@ -2,8 +2,20 @@ import sqlite3
 from fastapi import FastAPI, Query
 from typing import Optional
 
-app = FastAPI()
+def get_db_connection():
+    connection = sqlite3.connect("data/netflix.db")
+    connection.row_factory = sqlite3.Row
+    print("Database connection established.")
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM titles LIMIT 5")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(dict(row))
+    return connection
 
+get_db_connection()
+
+app = FastAPI()
 
 @app.get("/titles")
 def get_titles():
