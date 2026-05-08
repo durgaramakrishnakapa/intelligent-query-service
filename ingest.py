@@ -22,6 +22,22 @@ def clean_text_columns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
 def handle_missing_values(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     """Replace missing values with default placeholders."""
 
+    missing_report = {
+        "director": df["director"].isnull().sum(),
+        "cast": df["cast"].isnull().sum(),
+        "country": df["country"].isnull().sum(),
+        "date_added": df["date_added"].isnull().sum(),
+        "rating": df["rating"].isnull().sum()
+    }
+
+    df["director"] = df["director"].fillna("Unknown Director")
+    df["cast"] = df["cast"].fillna("Cast Not Available")
+    df["country"] = df["country"].fillna("Country Not Available")
+    df["date_added"] = df["date_added"].fillna("Date Not Available")
+    df["rating"] = df["rating"].fillna("Rating Not Available")
+
+    return df, missing_report
+
 
 def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Standardize categorical column formatting."""
@@ -86,8 +102,12 @@ def main() -> None:
     print("\nText cleaning completed.")
     print(df.head())
 
-    print("\nMissing values report:")
+
+    df, missing_report = handle_missing_values(df)
+
+    print("\nMissing values handled successfully.")
     print(df.isnull().sum())
+    print(missing_report)
 
 if __name__ == "__main__":
     main()
