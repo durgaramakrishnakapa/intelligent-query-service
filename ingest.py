@@ -129,6 +129,15 @@ def print_summary_report(
 ) -> None:
     """Print a summary of the ingestion process."""
 
+    print("\nINGESTION SUMMARY")
+    print("-" * 40)
+    print(f"Total rows loaded: {total_rows}")
+    print(f"Final rows inserted: {final_rows}")
+    print(f"Duplicates removed: {duplicates_removed}")
+
+    print("\nMissing values fixed:")
+    for column, count in missing_report.items():
+        print(f"{column}: {count}")
 
 def main() -> None:
     """Run the complete data ingestion pipeline."""
@@ -195,6 +204,17 @@ def main() -> None:
     insert_cleaned_data(connection, df)
 
     print("Cleaned data inserted successfully.")
+
+    print_summary_report(
+    total_rows=len(load_csv_data(csv_path)),
+    final_rows=len(df),
+    missing_report=missing_report,
+    duplicates_removed=duplicate_count
+    )
+
+    connection.close()
+
+    print("\nDatabase connection closed.")
 
 
 
