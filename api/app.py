@@ -10,7 +10,7 @@ def get_db_connection():
 
 app = FastAPI()
 
-@app.get("/titles" , tags = ["1st one"])
+@app.get("/titles", tags=["Title Listing"])
 def get_titles(
     country: Optional[str] = Query(default=None),
     release_year: Optional[int] = Query(default=None),
@@ -66,13 +66,26 @@ def get_titles(
     }
 
 
-@app.get("/titles/{show_id}")
+@app.get("/titles/{show_id}", tags=["Title Details"])
 def get_title_by_id(show_id: str):
     """Fetch a single title by its show_id."""
-    pass
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    row = cursor.execute("SELECT * FROM titles WHERE show_id = ?", (show_id,)).fetchone()
+    connection.close()
+
+    if row is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Title not found")
+
+    return dict(row)
+
+    
 
 
-@app.get("/stats")
+@app.get("/stats", tags=["Statistics"])
 def get_stats():
     """Return summary stats: total titles, count by type, and top 10 countries."""
     pass
