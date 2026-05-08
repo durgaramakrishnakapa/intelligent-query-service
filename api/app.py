@@ -88,7 +88,31 @@ def get_title_by_id(show_id: str):
 @app.get("/stats", tags=["Statistics"])
 def get_stats():
     """Return summary stats: total titles, count by type, and top 10 countries."""
-    pass
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    total = cursor.execute("SELECT COUNT(*) FROM titles").fetchone()[0]
+
+    type_rows = cursor.execute("SELECT type, COUNT(*) as count FROM titles GROUP BY type").fetchall()
+    count_by_type = {row["type"]: row["count"] for row in type_rows}
+
+    country_rows = cursor.execute("""
+        SELECT country, COUNT(*) as count
+        FROM titles
+        GROUP BY country
+        ORDER BY count DESC
+        LIMIT 10
+    """).fetchall()
+    top_countries = [{"country": row["country"], "count": row["count"]} for row in country_rows]
+
+    connection.close()
+
+    return {
+        "total_titles": total,
+        "count_by_type": count_by_type,
+        "top_10_countries": top_countries
+    }
 
 
 if __name__ == "__main__":
