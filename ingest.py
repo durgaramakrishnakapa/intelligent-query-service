@@ -42,6 +42,18 @@ def handle_missing_values(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
 def standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Standardize categorical column formatting."""
 
+    df["type"] = df["type"].replace({
+        "tv show": "TV Show",
+        "Tv Show": "TV Show",
+        "TV Show": "TV Show",
+        "movie": "Movie",
+        "Movie": "Movie"
+    })
+
+    df["rating"] = df["rating"].str.upper()
+
+    return df
+
 
 def normalize_multi_value_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize spacing in comma-separated columns."""
@@ -108,6 +120,11 @@ def main() -> None:
     print("\nMissing values handled successfully.")
     print(df.isnull().sum())
     print(missing_report)
+
+    df = standardize_columns(df)
+
+    print("\nColumn standardization completed.")
+    print(df[["type", "rating"]].head())
 
 if __name__ == "__main__":
     main()
