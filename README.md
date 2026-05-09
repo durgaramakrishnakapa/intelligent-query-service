@@ -1,7 +1,4 @@
 # intelligent-query-service
-
-A Netflix catalogue API with a RAG-based Q&A endpoint powered by Gemini.
-
 ---
 
 ## Setup
