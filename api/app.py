@@ -1,11 +1,15 @@
 import sqlite3
+import logging
 from fastapi import FastAPI, Query
 from typing import Optional
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_db_connection():
     connection = sqlite3.connect("data/netflix.db")
     connection.row_factory = sqlite3.Row
-    print("Database connection established.")
+    logger.info("Database connection established.")
     return connection
 
 app = FastAPI()

@@ -1,8 +1,12 @@
 import os
 import json
+import logging
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 TOTAL_SHARDS = 20
@@ -94,7 +98,7 @@ def process_shards(model: SentenceTransformer, shards: list) -> None:
     """Process all shards."""
 
     for shard_number, shard in enumerate(shards):
-        print(f"\nProcessing shard {shard_number + 1}/{TOTAL_SHARDS}")
+        logger.info(f"Processing shard {shard_number + 1}/{TOTAL_SHARDS}")
 
         embeddings = create_embeddings(model, shard)
 
@@ -107,7 +111,7 @@ def process_shards(model: SentenceTransformer, shards: list) -> None:
 
         save_metadata(shard, metadata_path)
 
-        print(f"Shard {shard_number} completed.")
+        logger.info(f"Shard {shard_number} completed.")
 
 
 def main() -> None:
@@ -117,11 +121,11 @@ def main() -> None:
 
     chunks = load_chunks(chunks_path)
 
-    print(f"Total chunks loaded: {len(chunks)}")
+    logger.info(f"Total chunks loaded: {len(chunks)}")
 
     shards = split_into_shards(chunks, TOTAL_SHARDS)
 
-    print(f"Total shards created: {len(shards)}")
+    logger.info(f"Total shards created: {len(shards)}")
 
     create_output_directories()
 
@@ -129,7 +133,7 @@ def main() -> None:
 
     process_shards(model, shards)
 
-    print("\nAll shards processed successfully.")
+    logger.info("All shards processed successfully.")
 
 
 if __name__ == "__main__":
