@@ -123,4 +123,4 @@ Overall, I used AI as a development assistant, not as an unreviewed code generat
   Currently, shard splitting is generic. With more time, I would implement domain-based sharding, such as separating Movies and TV Shows (and potentially by genre or country). Then, based on the user query, the system could intelligently route retrieval only to relevant shards instead of searching all shards. This would reduce latency and improve retrieval accuracy.
 - **Build a frontend UI** — A simple frontend for both the structured filtering system and the RAG question-answering system, so the project becomes easier to interact with instead of using only API endpoints.
 - **Add caching for RAG performance** — Cache frequently used resources such as the embedding model, FAISS indexes, and repeated query results to reduce response time.
-- 
+
