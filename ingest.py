@@ -1,7 +1,11 @@
 """Load, clean, and store Netflix dataset into SQLite."""
 
 import sqlite3
+import logging
 import pandas as pd
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def load_csv_data(csv_path: str) -> pd.DataFrame:
@@ -146,8 +150,8 @@ def main() -> None:
 
     df = load_csv_data(csv_path)
 
-    print("CSV loaded successfully.")
-    print(df.head())
+    logger.info("CSV loaded successfully.")
+    logger.info(df.head().to_string())
 
     text_columns = [
         "title",
@@ -162,48 +166,48 @@ def main() -> None:
 
     df = clean_text_columns(df, text_columns)
 
-    print("\nText cleaning completed.")
-    print(df.head())
-
+    logger.info("Text cleaning completed.")
+    logger.info(df.head().to_string())
 
     df, missing_report = handle_missing_values(df)
 
-    print("\nMissing values handled successfully.")
-    print(df.isnull().sum())
-    print(missing_report)
+    logger.info("Missing values handled successfully.")
+    logger.info(df.isnull().sum().to_string())
+    logger.info(missing_report)
+
     df = standardize_columns(df)
 
-    print("\nColumn standardization completed.")
-    print(df[["type", "rating"]].head())
+    logger.info("Column standardization completed.")
+    logger.info(df[["type", "rating"]].head().to_string())
 
     df = normalize_multi_value_columns(df)
 
-    print("\nMulti-value column normalization completed.")
-    print(df[["country", "cast", "listed_in"]].head())
+    logger.info("Multi-value column normalization completed.")
+    logger.info(df[["country", "cast", "listed_in"]].head().to_string())
 
     df = validate_release_year(df)
 
-    print("\nRelease year validation completed.")
-    print(df["release_year"].dtype)
+    logger.info("Release year validation completed.")
+    logger.info(df["release_year"].dtype)
 
     df, duplicate_count = remove_duplicate_rows(df)
 
-    print("\nDuplicate removal completed.")
-    print(f"Duplicates removed: {duplicate_count}")
+    logger.info("Duplicate removal completed.")
+    logger.info(f"Duplicates removed: {duplicate_count}")
 
     db_path = "data/netflix.db"
 
     connection = create_database_connection(db_path)
 
-    print("\nDatabase connection created successfully.")
+    logger.info("Database connection created successfully.")
 
     create_titles_table(connection)
 
-    print("Titles table created successfully.")
+    logger.info("Titles table created successfully.")
 
     insert_cleaned_data(connection, df)
 
-    print("Cleaned data inserted successfully.")
+    logger.info("Cleaned data inserted successfully.")
 
     print_summary_report(
     total_rows=len(load_csv_data(csv_path)),
@@ -214,9 +218,7 @@ def main() -> None:
 
     connection.close()
 
-    print("\nDatabase connection closed.")
-
-
+    logger.info("Database connection closed.")
 
 if __name__ == "__main__":
     main()
