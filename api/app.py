@@ -1,7 +1,8 @@
 import sqlite3
 import logging
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, HTTPException
 from typing import Optional
+import uvicorn
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -80,8 +81,7 @@ def get_title_by_id(show_id: str):
     row = cursor.execute("SELECT * FROM titles WHERE show_id = ?", (show_id,)).fetchone()
     connection.close()
 
-    if row is None:
-        from fastapi import HTTPException
+    if row is None: 
         raise HTTPException(status_code=404, detail="Title not found")
 
     return dict(row)
@@ -120,5 +120,5 @@ def get_stats():
 
 
 if __name__ == "__main__":
-    import uvicorn
+    
     uvicorn.run("app:app", host="0.0.0.0", port=8009, reload=True)
